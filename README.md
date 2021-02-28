@@ -12,5 +12,7 @@ Credit/Debit Spread, Iron Condor etc are not supported as of yet.
 Usage:
 - Enter Login Details to file login.txt
 - run "python options_analysis.py". By Default sms authentication is enabled. 
-         _ Enter OTP code received through sms.
-- OptionsProfit_<current_date>.xlsx file will be created in same directory. Enjoy!!
+- Enter OTP code received through sms.
+- OptionsProfit_<current_date>.xlsx file will be created in same directory. 
+
+Enjoy!!
