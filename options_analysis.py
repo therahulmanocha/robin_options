@@ -12,6 +12,7 @@ from pytz import timezone
 import pprint
 import xlsxwriter
 import xlsxwriter.utility as xlsutils
+import argparse
 
 class AccessRH:
   def __init__(self,rh_filepath = './login.txt', mfa_method = 'sms', expiresIn = '2000', store_session = False):
@@ -64,8 +65,8 @@ class AccessRH:
 
 
 class ParseRHOptions:
-  def __init__(self):
-    self.now = datetime.now(timezone('America/Los_Angeles')).strftime("%Y%m%d")
+  def __init__(self,current_date=datetime.now(timezone('America/Los_Angeles')).strftime("%Y%m%d")):
+    self.now =  current_date
     self.filled_options = {}
     self.options_profit = {}
     self.open_contracts = {}
@@ -213,12 +214,13 @@ class ParseRHOptions:
              open_contracts.append(contract)
 
 class GenXlsx:
-  def __init__(self,options_profit,open_contracts,sellyear,workbookname='./OptionsProfit'):
-    self.now = datetime.now(timezone('America/Los_Angeles')).strftime("%Y%m%d")
+  def __init__(self,options_profit,open_contracts,sellyear,workbookname='./OptionsProfit',current_date=datetime.now(timezone('America/Los_Angeles')).strftime("%Y%m%d")):
+    self.now = current_date
     self.options_profit = options_profit
     self.open_contracts = open_contracts
     self.sellyear = sorted(sellyear)
     self.workbookname = workbookname + '_' + self.now + '.xlsx'
+    print("Options Profit/Loss Statement Generated in File: %s" % self.workbookname)
     self.workbook = xlsxwriter.Workbook(self.workbookname)
     # Add a bold format to use to highlight cells.
     self.bold = self.workbook.add_format({'bold': True})
@@ -316,15 +318,43 @@ class GenXlsx:
 
 
 if __name__ == '__main__':
-    rh_obj = AccessRH(mfa_method='sms',expiresIn='5000' , store_session=True)
+
+    print("Robinhood Options Profit/Loss Analysis v0.1")
+
+    # Parse Input Arguments
+    text = 'Robinhood Options Profit/Loss Analysis v0.1'
+    parser = argparse.ArgumentParser(description=text)
+    parser.add_argument("-a", "--auth", help="Input Authentication method: mfa/sms",default='sms')
+    # Read arguments from the command line
+    args = parser.parse_args()
+    if args.auth:
+        print('Authentication Method : %s' % args.auth)
+        mfa_method = args.auth
+
+    # Login into RH account using mfa_method
+    rh_obj = AccessRH(mfa_method=mfa_method,expiresIn='5000' , store_session=True)
     rh_obj.attempt_login()
     rh_obj.test_login()
 
-    option_obj = ParseRHOptions()
+    tz = timezone('America/Los_Angeles')
+    print("TimeZone: %s" % tz)
+    current_date = datetime.now(tz)
+    print("Date: %s" % current_date)
+
+    # Parse Filled Options to Find Profit/Loss
+    option_obj = ParseRHOptions(current_date=current_date.strftime("%Y%m%d"))
     option_obj.parse_option_orders()
     option_obj.find_profit_loss()
 
-    xlsobj = GenXlsx(option_obj.options_profit,option_obj.open_contracts,option_obj.sellyear)
+    # Generate XLS File with Summary of Profit/Loss and Itemized Contracts
+    # Summary Worksheet Formatting:
+        # Stock Year1 Year2 Year3 Total
+        # AAPL  123    456    789  1368
+        # Total 123    456    789  1368
+    # Itemized Worksheet Formatting:
+        # Ticker Cost Duration(days) Strategy    Year    Profit
+        # AAPL   123   30            long_call    2019    456
+    xlsobj = GenXlsx(option_obj.options_profit,option_obj.open_contracts,option_obj.sellyear,current_date=current_date.strftime("%Y%m%d"))
     xlsobj.accumulated_profit_worksheet()
     xlsobj.itemized_profit_worksheet()
     xlsobj.close()
