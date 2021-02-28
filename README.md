@@ -10,7 +10,7 @@ Currently this script supports following Option trades:
 Credit/Debit Spread, Iron Condor etc are not supported as of yet.
 
 Usage:
-1: Enter Login Details to file login.txt
-2: run "python options_analysis.py". By Default sms authentication is enabled. 
-         -Enter OTP code received through sms.
-3: OptionsProfit_<current_date>.xlsx file will be created in same directory. Enjoy!!
+*1: Enter Login Details to file login.txt
+*2: run "python options_analysis.py". By Default sms authentication is enabled. 
+         _ Enter OTP code received through sms.
+*3: OptionsProfit_<current_date>.xlsx file will be created in same directory. Enjoy!!
