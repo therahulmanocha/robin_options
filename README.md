@@ -1,5 +1,6 @@
 # Robinhood Options Trade Analysis
-Analyze Options Profit for Robinhood
+Generate Profit/Loss Statement for Robinhood Options Trading.
+
 Currently this script supports following Option trades:
 
 ```
