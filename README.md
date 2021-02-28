@@ -1,11 +1,11 @@
-# robin_options
+# Robinhood Options Trade Analysis
 Analyze Options Profit for Robinhood
 Currently this script supports following Option trades:
 
-**1. Long Calls**
-**2. Long Puts**
-**3. Short Calls**
-**4. Short Puts**
+1. Long Calls 
+2. Long Puts 
+3. Short Calls 
+4. Short Puts 
 
 Credit/Debit Spread, Iron Condor etc are not supported as of yet.
 
